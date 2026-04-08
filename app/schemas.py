@@ -6,42 +6,81 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 
 class FePredictRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        populate_by_name=True,
+    )
 
-    session_id: str = Field(..., description="Session identifier")
+    # 내부 상관관계 추적용
+    session_id: str = Field(..., description="Internal correlation id")
+
+    # Swagger 기준 정확한 식별자
+    x_session_ticket: str = Field(
+        ...,
+        alias="X-Session-Ticket",
+        description="Ticketing session token from ticketing service",
+    )
+    show_schedule_id: int = Field(
+        ...,
+        alias="showScheduleId",
+        description="showScheduleId from ticketing service",
+    )
+
+    # 모델 feature
     duration_ms: float = Field(..., ge=0, description="Stage/session duration in ms")
     mouse_teleport_rate: float = Field(..., ge=0, description="Mouse teleport rate")
     mousemove_count: float = Field(..., ge=0, description="Mousemove count")
 
-    @field_validator("session_id")
+    @field_validator("session_id", "x_session_ticket")
     @classmethod
-    def validate_session_id(cls, value: str) -> str:
+    def validate_non_empty_str(cls, value: str) -> str:
         value = value.strip()
         if not value:
-            raise ValueError("session_id must not be empty")
+            raise ValueError("must not be empty")
         return value
 
 
 class BePredictRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        populate_by_name=True,
+    )
 
-    session_id: str = Field(..., description="Session identifier")
+    # 내부 상관관계 추적용
+    session_id: str = Field(..., description="Internal correlation id")
+
+    # Swagger 기준 정확한 식별자
+    x_user_id: str = Field(
+        ...,
+        alias="X-User-Id",
+        description="User id used for accumulation/penalty",
+    )
+    order_id: str = Field(
+        ...,
+        alias="orderId",
+        description="Payment order id for current case",
+    )
+
+    # 모델 feature
     ts_payment_ready: float = Field(..., ge=0, description="Payment-ready to terminal time")
     ts_whole_session: float = Field(..., ge=0, description="Whole session time from login to confirm")
     req_interval_cv_pre_hold: float = Field(..., ge=0, description="Request interval CV before first hold")
     req_interval_cv_hold_gap: float = Field(..., ge=0, description="Absolute CV gap between post-hold and pre-hold")
 
-    @field_validator("session_id")
+    @field_validator("session_id", "x_user_id", "order_id")
     @classmethod
-    def validate_session_id(cls, value: str) -> str:
+    def validate_non_empty_str(cls, value: str) -> str:
         value = value.strip()
         if not value:
-            raise ValueError("session_id must not be empty")
+            raise ValueError("must not be empty")
         return value
 
 
 class PredictResponse(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        populate_by_name=True,
+    )
 
     session_id: str
     model_type: Literal["fe", "be"]
@@ -49,6 +88,12 @@ class PredictResponse(BaseModel):
     bot_score: float = Field(..., ge=0.0, le=1.0)
     threshold: float = Field(..., ge=0.0, le=1.0)
     model_name: Optional[str] = None
+
+    # 운영용 식별자 그대로 반환
+    x_session_ticket: Optional[str] = Field(default=None, alias="X-Session-Ticket")
+    show_schedule_id: Optional[int] = Field(default=None, alias="showScheduleId")
+    x_user_id: Optional[str] = Field(default=None, alias="X-User-Id")
+    order_id: Optional[str] = Field(default=None, alias="orderId")
 
 
 class HealthResponse(BaseModel):

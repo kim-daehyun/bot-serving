@@ -60,6 +60,7 @@ def predict_fe(payload: FePredictRequest):
     if fe_model is None:
         raise HTTPException(status_code=500, detail="FE model not loaded")
 
+    # 모델에는 feature만 넣음
     feature_dict = {
         "duration_ms": payload.duration_ms,
         "mouse_teleport_rate": payload.mouse_teleport_rate,
@@ -80,6 +81,8 @@ def predict_fe(payload: FePredictRequest):
         bot_score=round(bot_score, 6),
         threshold=FE_THRESHOLD,
         model_name=model_name,
+        x_session_ticket=payload.x_session_ticket,
+        show_schedule_id=payload.show_schedule_id,
     )
 
 
@@ -88,6 +91,7 @@ def predict_be(payload: BePredictRequest):
     if be_model is None:
         raise HTTPException(status_code=500, detail="BE model not loaded")
 
+    # 모델에는 feature만 넣음
     feature_dict = {
         "ts_payment_ready": payload.ts_payment_ready,
         "ts_whole_session": payload.ts_whole_session,
@@ -109,4 +113,6 @@ def predict_be(payload: BePredictRequest):
         bot_score=round(bot_score, 6),
         threshold=BE_THRESHOLD,
         model_name=model_name,
+        x_user_id=payload.x_user_id,
+        order_id=payload.order_id,
     )
