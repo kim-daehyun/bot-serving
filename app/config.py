@@ -14,20 +14,19 @@ API_VERSION = os.getenv("API_VERSION", "1.0.0")
 
 FE_THRESHOLD = float(os.getenv("FE_THRESHOLD", "0.5"))
 BE_THRESHOLD = float(os.getenv("BE_THRESHOLD", "0.5"))
-
 BOT_CLASS_INDEX = int(os.getenv("BOT_CLASS_INDEX", "1"))
 
 FE_FEATURE_COLUMNS = [
     "duration_ms",
-    "mouse_activity_rate",
     "mouse_teleport_rate",
+    "mousemove_count",
 ]
 
 BE_FEATURE_COLUMNS = [
-    "endpoint_burst_max_1s",
-    "req_interval_cv",
-    "target_retry_count",
-    "payment_ready_to_terminal_ms",
+    "ts_payment_ready",
+    "ts_whole_session",
+    "req_interval_cv_pre_hold",
+    "req_interval_cv_hold_gap",
 ]
 
 

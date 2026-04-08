@@ -46,7 +46,6 @@ def _extract_expected_columns_from_pipeline(model: Pipeline) -> list[str]:
         raise ValueError("Preprocessor does not have 'transformers' attribute.")
 
     columns: list[str] = []
-
     for _name, _transformer, cols in preprocessor.transformers:
         if cols is None:
             continue
@@ -62,12 +61,11 @@ def _assert_expected_columns(
     model_name: str,
 ) -> None:
     actual_columns = _extract_expected_columns_from_pipeline(model)
-
     if actual_columns != expected_columns:
         raise ValueError(
             f"{model_name} feature columns mismatch.\n"
             f"Expected: {expected_columns}\n"
-            f"Actual:   {actual_columns}"
+            f"Actual: {actual_columns}"
         )
 
 
@@ -82,11 +80,9 @@ def _assert_predict_proba_supported(model: Pipeline, model_name: str) -> None:
 def _validate_model(path: Path, expected_columns: list[str], model_name: str) -> Pipeline:
     _assert_file_exists(path)
     loaded = _load_pickle(path)
-
     _assert_pipeline(loaded, model_name)
     _assert_expected_columns(loaded, expected_columns, model_name)
     _assert_predict_proba_supported(loaded, model_name)
-
     return loaded
 
 
@@ -115,7 +111,6 @@ def load_all_models() -> Tuple[Pipeline, Pipeline]:
 def summarize_loaded_model(model: Pipeline) -> dict:
     estimator = model.named_steps["model"]
     columns = _extract_expected_columns_from_pipeline(model)
-
     return {
         "pipeline_type": model.__class__.__name__,
         "estimator_type": estimator.__class__.__name__,

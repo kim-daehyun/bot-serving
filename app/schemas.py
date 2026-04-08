@@ -9,10 +9,9 @@ class FePredictRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     session_id: str = Field(..., description="Session identifier")
-
     duration_ms: float = Field(..., ge=0, description="Stage/session duration in ms")
-    mouse_activity_rate: float = Field(..., ge=0, description="Mouse activity rate")
     mouse_teleport_rate: float = Field(..., ge=0, description="Mouse teleport rate")
+    mousemove_count: float = Field(..., ge=0, description="Mousemove count")
 
     @field_validator("session_id")
     @classmethod
@@ -27,11 +26,10 @@ class BePredictRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     session_id: str = Field(..., description="Session identifier")
-
-    endpoint_burst_max_1s: float = Field(..., ge=0, description="Max burst in 1 second")
-    req_interval_cv: float = Field(..., ge=0, description="Coefficient of variation of request interval")
-    target_retry_count: float = Field(..., ge=0, description="Retry count for same target")
-    payment_ready_to_terminal_ms: float = Field(..., ge=0, description="Time from payment_ready to terminal state")
+    ts_payment_ready: float = Field(..., ge=0, description="Payment-ready to terminal time")
+    ts_whole_session: float = Field(..., ge=0, description="Whole session time from login to confirm")
+    req_interval_cv_pre_hold: float = Field(..., ge=0, description="Request interval CV before first hold")
+    req_interval_cv_hold_gap: float = Field(..., ge=0, description="Absolute CV gap between post-hold and pre-hold")
 
     @field_validator("session_id")
     @classmethod

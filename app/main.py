@@ -30,13 +30,10 @@ be_model = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global fe_model, be_model
-
     validate_config()
     fe_model, be_model = load_all_models()
-
     print("[BOOT] FE model loaded:", summarize_loaded_model(fe_model))
     print("[BOOT] BE model loaded:", summarize_loaded_model(be_model))
-
     yield
 
 
@@ -65,8 +62,8 @@ def predict_fe(payload: FePredictRequest):
 
     feature_dict = {
         "duration_ms": payload.duration_ms,
-        "mouse_activity_rate": payload.mouse_activity_rate,
         "mouse_teleport_rate": payload.mouse_teleport_rate,
+        "mousemove_count": payload.mousemove_count,
     }
 
     bot_score, label, model_name = predict_score_and_label(
@@ -92,10 +89,10 @@ def predict_be(payload: BePredictRequest):
         raise HTTPException(status_code=500, detail="BE model not loaded")
 
     feature_dict = {
-        "endpoint_burst_max_1s": payload.endpoint_burst_max_1s,
-        "req_interval_cv": payload.req_interval_cv,
-        "target_retry_count": payload.target_retry_count,
-        "payment_ready_to_terminal_ms": payload.payment_ready_to_terminal_ms,
+        "ts_payment_ready": payload.ts_payment_ready,
+        "ts_whole_session": payload.ts_whole_session,
+        "req_interval_cv_pre_hold": payload.req_interval_cv_pre_hold,
+        "req_interval_cv_hold_gap": payload.req_interval_cv_hold_gap,
     }
 
     bot_score, label, model_name = predict_score_and_label(
