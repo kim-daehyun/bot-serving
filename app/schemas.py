@@ -11,10 +11,7 @@ class FePredictRequest(BaseModel):
         populate_by_name=True,
     )
 
-    # 내부 상관관계 추적용
-    session_id: str = Field(..., description="Internal correlation id")
-
-    # Swagger 기준 정확한 식별자
+    # 운영용 최소 식별자
     x_session_ticket: str = Field(
         ...,
         alias="X-Session-Ticket",
@@ -28,10 +25,10 @@ class FePredictRequest(BaseModel):
 
     # 모델 feature
     duration_ms: float = Field(..., ge=0, description="Stage/session duration in ms")
-    mouse_teleport_rate: float = Field(..., ge=0, description="Mouse teleport rate")
+    mousemove_teleport_count: float = Field(..., ge=0, description="Mousemove teleport count")
     mousemove_count: float = Field(..., ge=0, description="Mousemove count")
 
-    @field_validator("session_id", "x_session_ticket")
+    @field_validator("x_session_ticket")
     @classmethod
     def validate_non_empty_str(cls, value: str) -> str:
         value = value.strip()
@@ -46,10 +43,7 @@ class BePredictRequest(BaseModel):
         populate_by_name=True,
     )
 
-    # 내부 상관관계 추적용
-    session_id: str = Field(..., description="Internal correlation id")
-
-    # Swagger 기준 정확한 식별자
+    # 운영용 최소 식별자
     x_user_id: str = Field(
         ...,
         alias="X-User-Id",
@@ -67,7 +61,7 @@ class BePredictRequest(BaseModel):
     req_interval_cv_pre_hold: float = Field(..., ge=0, description="Request interval CV before first hold")
     req_interval_cv_hold_gap: float = Field(..., ge=0, description="Absolute CV gap between post-hold and pre-hold")
 
-    @field_validator("session_id", "x_user_id", "order_id")
+    @field_validator("x_user_id", "order_id")
     @classmethod
     def validate_non_empty_str(cls, value: str) -> str:
         value = value.strip()
@@ -82,7 +76,6 @@ class PredictResponse(BaseModel):
         populate_by_name=True,
     )
 
-    session_id: str
     model_type: Literal["fe", "be"]
     label: Literal["human", "bot"]
     bot_score: float = Field(..., ge=0.0, le=1.0)

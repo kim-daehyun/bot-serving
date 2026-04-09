@@ -16,12 +16,14 @@ FE_THRESHOLD = float(os.getenv("FE_THRESHOLD", "0.5"))
 BE_THRESHOLD = float(os.getenv("BE_THRESHOLD", "0.5"))
 BOT_CLASS_INDEX = int(os.getenv("BOT_CLASS_INDEX", "1"))
 
+# FE 최신 feature 컬럼
 FE_FEATURE_COLUMNS = [
     "duration_ms",
-    "mouse_teleport_rate",
+    "mousemove_teleport_count",
     "mousemove_count",
 ]
 
+# BE 최신 feature 컬럼
 BE_FEATURE_COLUMNS = [
     "ts_payment_ready",
     "ts_whole_session",

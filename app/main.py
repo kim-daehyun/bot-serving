@@ -63,7 +63,7 @@ def predict_fe(payload: FePredictRequest):
     # 모델에는 feature만 넣음
     feature_dict = {
         "duration_ms": payload.duration_ms,
-        "mouse_teleport_rate": payload.mouse_teleport_rate,
+        "mousemove_teleport_count": payload.mousemove_teleport_count,
         "mousemove_count": payload.mousemove_count,
     }
 
@@ -75,7 +75,6 @@ def predict_fe(payload: FePredictRequest):
     )
 
     return PredictResponse(
-        session_id=payload.session_id,
         model_type="fe",
         label=label,
         bot_score=round(bot_score, 6),
@@ -107,7 +106,6 @@ def predict_be(payload: BePredictRequest):
     )
 
     return PredictResponse(
-        session_id=payload.session_id,
         model_type="be",
         label=label,
         bot_score=round(bot_score, 6),
