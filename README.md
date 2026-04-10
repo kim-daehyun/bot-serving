@@ -260,9 +260,7 @@ export BE_THRESHOLD=0.7
 python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-## 10. 발표용 핵심 정리
-
-발표에서는 아래 메시지 중심으로 설명하면 흐름이 깔끔합니다.
+## 10. 핵심 정리
 
 ### 문제 정의
 
